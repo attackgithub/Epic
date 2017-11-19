@@ -1,14 +1,20 @@
 CC := gcc
-CWARN := -Wall
-CSTD := -std=c1x
-OPT := -O2
-LIB := -lws2_32
+CFLAGS += -std=c11 -Wall -O2
+LDFLAGS += -s
+LIBS := -lws2_32
 
-all : server client
+BIN := server.exe client.exe
 
-server :
-	${CC} $@.c -o sev ${CWARN} ${CSTD} ${OPT} ${LIB}
+.PHONY: all
+all: $(BIN)
 
-client :
-	${CC} $@.c -o cli ${CWARN} ${CSTD} ${OPT} ${LIB}
+.PHONY: clean
+clean:
+	$(RM) -f $(BIN) *.o
 
+# 这个目标的依赖只是“凑巧”
+%.exe: %.o
+	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+%.o: %.c Makefile
+	$(CC) -c -o $@ $(CFLAGS) $<
